@@ -14,8 +14,8 @@ Reader → Writer → Critic → Director ─(ship)→ Publisher
 
 | Path | What it is |
 | --- | --- |
-| `Lights-Camera-Agents.html` | The workshop slide deck (plain HTML/CSS/JS, no build step) |
-| `deck.css`, `deck.js`, `assets/` | Styles, navigation, fonts, logos and media used by the deck |
+| `deck/Lights-Camera-Agents.html` | The workshop slide deck (plain HTML/CSS/JS, no build step) |
+| `deck/deck.css`, `deck/deck.js`, `deck/assets/` | Styles, navigation, fonts, logos and media used by the deck |
 | `lab/Lights-Camera-Agents-Lab.ipynb` | The hands-on Colab lab, with TODOs and collapsible solutions |
 
 ## Run the lab
@@ -48,7 +48,7 @@ Reader → Writer → Critic → Director ─(ship)→ Publisher
 
 ## Present the deck
 
-Open `Lights-Camera-Agents.html` in Edge or Chrome. Keep the `assets/` folder next to it.
+Open `deck/Lights-Camera-Agents.html` in Edge or Chrome. Keep the whole `deck/` folder together.
 
 | Key | Action |
 | --- | --- |
@@ -60,4 +60,4 @@ Open `Lights-Camera-Agents.html` in Edge or Chrome. Keep the `assets/` folder ne
 
 ## License
 
-The code and content are released under the [MIT License](LICENSE.txt). Third-party logos and media in `assets/` belong to their respective owners.
+The code and content are released under the [MIT License](LICENSE.txt). Third-party logos and media in `deck/assets/` belong to their respective owners.
