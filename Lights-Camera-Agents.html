@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lights, Camera, Agents! — From Zero to Hero: Building &amp; Evaluating Multi-Agent Systems</title>
+<link rel="stylesheet" href="deck.css">
+</head>
+<body>
+
+<!-- ============ icon sprite (stroke icons, 24x24) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-clapper" viewBox="0 0 24 24"><path d="M3 10h18v10H3z"/><path d="M3 10l1.5-5 16 3.5L21 10"/><path d="M8 5.6l2 4.2M13 6.7l2 3.3"/></symbol>
+  <symbol id="i-reel" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="7.5" r="1.8"/><circle cx="12" cy="16.5" r="1.8"/><circle cx="7.5" cy="12" r="1.8"/><circle cx="16.5" cy="12" r="1.8"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><rect x="2" y="8" width="13" height="10" rx="2"/><path d="M15 11l6-3v10l-6-3"/><circle cx="6" cy="5" r="2"/><circle cx="11" cy="5" r="2"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><path d="M9 4a3 3 0 00-3 3 3 3 0 00-2 5 3 3 0 002 5 3 3 0 006 1V5a2 2 0 00-3-1z"/><path d="M15 4a3 3 0 013 3 3 3 0 012 5 3 3 0 01-2 5 3 3 0 01-6 1"/></symbol>
+  <symbol id="i-script" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 9h6M9 13h7M9 17h5"/></symbol>
+  <symbol id="i-prop" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 00-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 005.2-5.4l-2.5 2.5-2.3-.5-.5-2.3z"/></symbol>
+  <symbol id="i-polaroid" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1.5"/><rect x="7" y="6" width="10" height="9"/><path d="M8 18h5"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-coin" viewBox="0 0 24 24"><ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v10c0 1.7 3.1 3 7 3s7-1.3 7-3V7M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></symbol>
+  <symbol id="i-loop" viewBox="0 0 24 24"><path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 014-4h12"/><path d="M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 01-4 4H4"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.3L12 17.5 6.5 20.4l1-6.3L3 9.7l6.2-.9z"/></symbol>
+  <symbol id="i-mega" viewBox="0 0 24 24"><path d="M3 10v4h4l9 5V5L7 10z"/><path d="M19 9a4 4 0 010 6"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 7h18v3a2 2 0 000 4v3H3v-3a2 2 0 000-4z"/><path d="M14 7v10" stroke-dasharray="2 2"/></symbol>
+  <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 01-12 0zM12 17v5"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/></symbol>
+  <symbol id="i-pop" viewBox="0 0 24 24"><path d="M5 9l2 12h10l2-12z"/><path d="M9 9l.8 12M15 9l-.8 12"/><path d="M6 9a2.5 2.5 0 013-4 3 3 0 016 0 2.5 2.5 0 013 4"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V5a1.5 1.5 0 013 0v6M11 10V3.5a1.5 1.5 0 013 0V10M14 10V5a1.5 1.5 0 013 0v8c0 4-2.5 8-7 8-3 0-4.5-1.5-6-4l-2-3.5a1.5 1.5 0 012.5-1.6L8 15"/></symbol>
+</svg>
+
+<!-- reusable film-reel art for section dividers -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="reel-art" viewBox="0 0 200 200">
+    <circle cx="100" cy="100" r="97" fill="#F0A830" stroke="#261B2B" stroke-width="4"/>
+    <g fill="#2E1838">
+      <circle cx="100" cy="23" r="15"/><circle cx="166.7" cy="61.5" r="15"/><circle cx="166.7" cy="138.5" r="15"/>
+      <circle cx="100" cy="177" r="15"/><circle cx="33.3" cy="138.5" r="15"/><circle cx="33.3" cy="61.5" r="15"/>
+    </g>
+    <circle cx="100" cy="100" r="50" fill="#FBF5EA" stroke="#261B2B" stroke-width="4"/>
+  </symbol>
+</svg>
+
+<div id="stage">
+
+<!-- ================================================================
+     OPENER
+     ================================================================ -->
+
+<section class="slide nofoot" data-title="A quick show of hands">
+  <div class="opener">
+  <div class="kicker">Before anything else · a quick show of hands</div>
+  <div class="hands">
+    <div class="q f"><div class="h"><svg><use href="#i-hand"/></svg></div><div>Who's used an AI chatbot this week?</div></div>
+    <div class="q f"><div class="h"><svg><use href="#i-hand"/></svg></div><div>Keep it up if it <span class="it r">did</span> something for you —<small>not just <span class="v">said</span> something.</small></div></div>
+    <div class="q f"><div class="h"><svg><use href="#i-hand"/></svg></div><div>Keep it up if you still copy-pasted<br>its answer somewhere yourself.</div></div>
+  </div>
+  </div>
+  <aside class="notes">
+⏱ 0:00–2:00 · 2 min
+Lights up. Don't introduce yourself yet.
+"Before I say anything about me — a quick show of hands."
+
+▸ CLICK — Q1
+"Who's used an AI chatbot this week? ChatGPT, Copilot, Gemini — anything."
+Wait. Most hands go up.
+
+▸ CLICK — Q2
+"Keep it up only if it DID something for you."
+"Booked, sent, filed, fixed — not just said something."
+Many hands drop. Smile at that.
+
+▸ CLICK — Q3
+"And keep it up if you still copy-pasted its answer somewhere yourself."
+"Yeah. Me too."
+  </aside>
+</section>
+
+<section class="slide nofoot" data-title="One chore">
+  <div class="center">
+    <div class="kicker" style="justify-content:center">Your turn</div>
+    <p class="wish">Name one chore you'd hand to an AI tomorrow —<br><span class="it p">if it could actually do it.</span></p>
+    <div class="chips">
+      <span class="chip f">reply to the class group</span>
+      <span class="chip f">fill the placement form</span>
+      <span class="chip f">turn my notes into flashcards</span>
+      <span class="chip hot f">post my blog everywhere</span>
+    </div>
+  </div>
+  <aside class="notes">
+⏱ 2:00–3:30 · 1.5 min
+"Quick one. Name one chore you'd hand to an AI tomorrow —"
+"if it could actually DO it, not just tell you how."
+Take 2–3 shout-outs. Repeat them back.
+
+▸ CLICK ×3 — chips
+"Reply to the class group." "Fill the placement form." "Notes into flashcards."
+React to whichever matches what the room said.
+
+▸ CLICK — "post my blog everywhere"
+"This one's mine. Keep it in mind — we'll come back to it."
+  </aside>
+</section>
+
+<section class="slide velvet" data-title="Bridge — the reason I asked">
+  <div class="kicker">The reason I asked…</div>
+  <p class="big-line" style="font-size:72px;max-width:1550px;color:var(--cream)">…is that the gap between an AI that <span class="it" style="color:var(--lilac)">tells you</span><br>and one that <span class="it a">actually does it</span> has a name.</p>
+  <div class="f bridge-word">Agents.</div>
+  <p class="lead f" style="margin-top:10px;max-width:1500px">And by the end of today, <b style="color:var(--amber2)">you</b> will have built one —<br>a crew that turns a blog into a scheduled thread, on real APIs.</p>
+  <aside class="notes">
+⏱ 3:30–4:15 · 0.75 min
+"The reason I asked…"
+"…is that the gap between an AI that TELLS you"
+"and one that ACTUALLY DOES IT has a name."
+
+▸ CLICK — Agents.
+Pause. Let the word land.
+
+▸ CLICK
+"And by the end of today, you'll have built one."
+"A crew that turns a blog into a scheduled thread — on real APIs."
+  </aside>
+</section>
+
+<!-- ================================================================
+     TITLE · INTRO · PROGRAMME · OUTCOMES
+     ================================================================ -->
+
+<section class="slide velvet nofoot" data-title="Title">
+  <div class="spot"></div>
+  <div class="center" style="position:relative">
+    <div class="marquee twinkle" style="width:1500px">
+      <div class="inner">
+        <div class="mono" style="letter-spacing:.4em;color:var(--amber);font-size:26px;font-weight:700">★ NOW SHOWING ★</div>
+        <h1 class="title-h1">Lights, Camera, <span class="it a">Agents!</span></h1>
+        <div class="subtitle">From Zero to Hero: Building &amp; Evaluating Multi-Agent Systems</div>
+      </div>
+    </div>
+    <div class="presenter-credit"><span class="mono">presented by</span> Tezan Sahu</div>
+  </div>
+  <aside class="notes">
+⏱ 4:15–4:30 · 0.25 min
+"Welcome to Lights, Camera, Agents!"
+"From zero to hero — building and evaluating multi-agent systems."
+"For the next two hours, you're my film crew."
+  </aside>
+</section>
+
+<section class="slide" data-title="Meet the director">
+  <div data-speaker="intro"></div>
+  <aside class="notes">
+⏱ 4:30–5:30 · 1 min
+"Quick intro so you know who's directing."
+Run through the cards in ~45 s. Don't read every line.
+Land on "off the clock" for a smile.
+
+✦ Content comes from assets/speaker/speaker.json → run scripts/sync_speaker.py after editing.
+  </aside>
+</section>
+
+<section class="slide" data-title="Now showing — the programme">
+  <div class="kicker">Tonight's programme</div>
+  <h2>Now showing in <span class="it p">seven reels</span></h2>
+  <div class="strip programme">
+    <div class="frame"><div class="no">REEL 01</div><svg class="i pi"><use href="#i-script"/></svg><h3>The Script</h3><p>What an agent really is</p></div>
+    <div class="frame"><div class="no">REEL 02</div><svg class="i pi"><use href="#i-user"/></svg><h3>The Cast</h3><p>Anatomy of one agent</p></div>
+    <div class="frame"><div class="no">REEL 03</div><svg class="i pi"><use href="#i-mega"/></svg><h3>The Director</h3><p>Directing a crew</p></div>
+    <div class="frame"><div class="no">REEL 04</div><svg class="i pi"><use href="#i-loop"/></svg><h3>Retakes</h3><p>Evaluating agents</p></div>
+    <div class="frame hot"><div class="no">★ PREMIERE</div><svg class="i pi"><use href="#i-clapper"/></svg><h3>Lab Time</h3><p>You build the crew</p></div>
+    <div class="frame"><div class="no">REEL 05</div><svg class="i pi"><use href="#i-coin"/></svg><h3>Box Office</h3><p>Shipping it</p></div>
+    <div class="frame"><div class="no">AFTER</div><svg class="i pi"><use href="#i-ticket"/></svg><h3>Post-Credits</h3><p>The quiz</p></div>
+  </div>
+  <p class="mono mute mt" style="font-size:24px">Theory first · then hands-on · stay for the post-credits scene.</p>
+  <aside class="notes">
+⏱ 5:30–6:15 · 0.75 min
+"Here's the programme, in seven reels."
+"Four reels of ideas: the script, the cast, the director, the retakes."
+"Then premiere night — you build."
+"Then the box office — what it takes to ship."
+"And like every Marvel film — stay for the post-credits scene."
+  </aside>
+</section>
+
+<section class="slide" data-title="By the end credits">
+  <div class="kicker">The call sheet</div>
+  <h2>By the end credits, <span class="it p">you'll be able to…</span></h2>
+  <div class="grid3 outcomes">
+    <div class="card f"><span class="tag">01 · Explain</span><h3>what makes an agent an agent</h3><p>and when a plain prompt is enough.</p></div>
+    <div class="card f"><span class="tag">02 · Design</span><h3>an agent's anatomy</h3><p>model, instructions, tools, memory.</p></div>
+    <div class="card f"><span class="tag">03 · Direct</span><h3>a multi-agent crew</h3><p>pick the right orchestration pattern.</p></div>
+    <div class="card f"><span class="tag">04 · Evaluate</span><h3>agents with an LLM judge</h3><p>turn “looks good” into a score.</p></div>
+    <div class="card amber f"><span class="tag">05 · Build</span><h3>a working crew on real APIs</h3><p>blog → thread → critic → scheduled post.</p></div>
+    <div class="card f"><span class="tag">06 · Ship</span><h3>with production in mind</h3><p>latency, cost, tracing, guardrails.</p></div>
+  </div>
+  <aside class="notes">
+⏱ 6:15–7:15 · 1 min
+"Six things you'll walk out with."
+
+▸ CLICK ×6 — one per outcome
+Explain what makes an agent an agent.
+Design one: model, instructions, tools, memory.
+Direct a crew — pick the right pattern.
+Evaluate it with an LLM judge.
+Build one on real APIs — linger here, it's the big one.
+Ship it with production in mind.
+  </aside>
+</section>
+
+<!-- ================================================================
+     REEL 01 — THE SCRIPT
+     ================================================================ -->
+
+<section class="slide velvet" data-reel="01" data-title="Reel 01 — The Script">
+  <div class="divider">
+    <div class="reelno"><svg class="spin"><use href="#reel-art"/></svg><div class="num">01</div></div>
+    <div><div class="kicker">Reel 01</div><h1>The Script</h1><p class="lead it">What <em>is</em> an agent, really?</p></div>
+  </div>
+  <aside class="notes">
+⏱ 7:15–7:30 · reel runs ~15 min
+"Reel one. The script."
+"Let's get precise about what an agent actually is."
+  </aside>
+</section>
+
+<section class="slide" data-title="Chatbots talk, agents act">
+  <div class="kicker">Narrator vs. actor</div>
+  <div class="grid2" style="gap:60px;margin-top:10px">
+    <div class="card f" style="padding:44px">
+      <div class="ico l"><svg><use href="#i-chat"/></svg></div>
+      <span class="tag">The narrator · chatbot</span>
+      <h3 style="font-size:48px">Tells you what to do.</h3>
+      <div class="flow mt"><span class="pill">question</span><span class="arrow">→</span><span class="pill">answer</span><span class="arrow">→</span><span class="pill l">you act</span></div>
+      <p class="mt">One turn. No hands. You carry the props.</p>
+    </div>
+    <div class="card amber f" style="padding:44px">
+      <div class="ico p"><svg><use href="#i-clapper"/></svg></div>
+      <span class="tag">The actor · agent</span>
+      <h3 style="font-size:48px">Does it, then checks.</h3>
+      <div class="flow mt"><span class="pill">goal</span><span class="arrow">→</span><span class="pill">plan</span><span class="arrow">→</span><span class="pill">act</span><span class="arrow">→</span><span class="pill a">check</span><span class="arrow">↺</span></div>
+      <p class="mt" style="color:var(--ink)">Many turns. Uses tools. Stops when the goal is met.</p>
+    </div>
+  </div>
+  <p class="big-line f mt2" style="text-align:center">Chatbots <span class="it v">talk</span>. Agents <span class="it p">act</span>.</p>
+  <aside class="notes">
+⏱ 7:30–9:30 · 2 min
+"Remember the hands that dropped? Here's why."
+
+▸ CLICK — narrator card
+"A chatbot is a narrator. It tells you what to do."
+"One turn. No hands. You carry the props."
+
+▸ CLICK — actor card
+"An agent is an actor. You give it a goal."
+"It plans, acts with tools, checks the result —"
+"and keeps going until the goal is met."
+
+▸ CLICK
+"Chatbots talk. Agents act."
+  </aside>
+</section>
+
+<section class="slide" data-title="Definition">
+  <div class="kicker">One-line definition</div>
+  <p class="defn">An agent is an <span class="dl a1">LLM<i>the brain that decides</i></span> running in a <span class="dl a2">loop<i>keeps going, turn after turn</i></span>,<br>using <span class="dl a3">tools<i>its hands on the world</i></span> until it reaches a <span class="dl a4">goal<i>knows when to say “cut”</i></span>.</p>
+  <p class="lead f" style="margin-top:110px">Everything else — memory, planning, multiple agents — is <span class="hl">production design</span> on top of these four words.</p>
+  <aside class="notes">
+⏱ 9:30–11:00 · 1.5 min
+"If you remember one line from today, make it this."
+Read it slowly, touching each word:
+"An agent is an LLM — the brain that decides."
+"Running in a loop — it takes more than one shot."
+"Using tools — its hands on the world."
+"Until it reaches a goal — it knows when to say cut."
+
+▸ CLICK
+"Everything else — memory, planning, many agents —"
+"is production design on top of these four words."
+  </aside>
+</section>
+
+<section class="slide" data-title="The autonomy dial">
+  <div class="kicker">How much does the actor improvise?</div>
+  <h2>Agency is a <span class="it p">dial</span>, not a switch</h2>
+  <div class="dial">
+    <div class="track"></div>
+    <div class="stop f"><b>1</b><h3>Scripted</h3><p>Plain code.<br>No LLM.</p></div>
+    <div class="stop f"><b>2</b><h3>Prompted</h3><p>One LLM call.<br>Text in, text out.</p></div>
+    <div class="stop f"><b>3</b><h3>Routed</h3><p>LLM picks<br>which path to run.</p></div>
+    <div class="stop hot f"><b>4</b><h3>Tool-using</h3><p>LLM calls tools<br>in a loop.</p></div>
+    <div class="stop hot f"><b>5</b><h3>Crew</h3><p>Agents plan &amp;<br>delegate to agents.</p></div>
+    <div class="bracket f"><span>today's set</span></div>
+  </div>
+  <p class="lead f" style="margin-top:40px">More autonomy = more power, <b class="r">and</b> more ways to go wrong.<br>Turn the dial only as far as the job needs.</p>
+  <aside class="notes">
+⏱ 11:00–13:00 · 2 min
+"Agency isn't a yes/no. It's a dial."
+
+▸ CLICK ×5 — stops 1 → 5
+1 · Plain code. No LLM at all.
+2 · One prompt. Text in, text out.
+3 · A router — the LLM picks which path to run.
+4 · A tool-using loop.
+5 · A crew — agents delegating to agents.
+
+▸ CLICK — bracket
+"Today we live at four and five."
+
+▸ CLICK
+"More autonomy means more power — and more ways to go wrong."
+"So turn the dial only as far as the job needs."
+  </aside>
+</section>
+
+<section class="slide" data-title="The agent loop">
+  <div class="loopwrap">
+    <svg viewBox="0 0 900 880" class="loop f">
+      <circle class="spin" cx="450" cy="440" r="240" fill="none" stroke="#C3B1E1" stroke-width="14" stroke-dasharray="10 18" style="transform-origin:450px 440px"/>
+      <circle cx="450" cy="440" r="280" fill="none" stroke="#261B2B" stroke-width="5"/>
+      <g fill="#261B2B">
+        <path transform="translate(648 242) rotate(45)" d="M-16-14L16 0-16 14z"/>
+        <path transform="translate(648 638) rotate(135)" d="M-16-14L16 0-16 14z"/>
+        <path transform="translate(252 638) rotate(225)" d="M-16-14L16 0-16 14z"/>
+        <path transform="translate(252 242) rotate(315)" d="M-16-14L16 0-16 14z"/>
+      </g>
+      <g stroke="#261B2B" stroke-width="5">
+        <circle cx="450" cy="160" r="104" fill="#F0A830"/><circle cx="730" cy="440" r="104" fill="#C3B1E1"/>
+        <circle cx="450" cy="720" r="104" fill="#E58B62"/><circle cx="170" cy="440" r="104" fill="#FBF5EA"/>
+      </g>
+      <g font-family="Courier Prime, monospace" font-weight="700" font-size="28" text-anchor="middle" fill="#261B2B">
+        <text x="450" y="152">PERCEIVE</text><text x="730" y="432">REASON</text><text x="450" y="712">ACT</text><text x="170" y="432">OBSERVE</text>
+      </g>
+      <g font-family="Instrument Serif, serif" font-style="italic" font-size="27" text-anchor="middle" fill="#261B2B">
+        <text x="450" y="188">read the scene</text><text x="730" y="468">plan the shot</text><text x="450" y="748">call a tool</text><text x="170" y="468">watch playback</text>
+      </g>
+      <text x="450" y="432" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="58" fill="#261B2B">GOAL</text>
+      <text x="450" y="474" text-anchor="middle" font-family="Instrument Serif, serif" font-style="italic" font-size="28" fill="#5B4A60">“turn my blog into a thread”</text>
+    </svg>
+    <div class="loop-side">
+      <div class="kicker">The agent loop</div>
+      <h2 style="font-size:66px">Every agent is a <span class="it p">loop</span>, not a prompt.</h2>
+      <div class="card f" style="margin-top:10px">
+        <span class="stamp" style="font-size:34px">CUT!</span>
+        <p style="margin-top:20px;color:var(--ink)">The loop stops when…</p>
+        <ul class="clean mt" style="margin-top:16px">
+          <li>the goal is met</li>
+          <li>it hits a max-turns limit</li>
+          <li>a human says stop</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+⏱ 13:00–15:30 · 2.5 min
+"Every agent is a loop, not a prompt."
+
+▸ CLICK — the loop
+Walk it clockwise:
+"Perceive — read the scene: the ask, the results so far."
+"Reason — plan the next shot."
+"Act — call a tool."
+"Observe — watch the playback."
+"And round again."
+
+▸ CLICK — CUT!
+"It stops when somebody yells cut:"
+"goal met, a max-turns limit, or a human."
+"Never ship a loop without a max-turns limit."
+  </aside>
+</section>
+
+<section class="slide" data-title="Every run is a screenplay">
+  <div class="trace-grid">
+    <div class="script f1" style="font-size:23px;padding:40px 56px">
+      <span class="pg">1.</span>
+      <div class="f"><div class="sh">INT. AGENT LOOP — TURN 1</div>
+      <div class="char">USER</div>
+      <div class="dia">Turn myblog.dev/first-internship into a thread and schedule it.</div>
+      <div class="char">AGENT</div><div class="par">(thinking)</div>
+      <div class="dia">I need the post first.</div>
+      <div class="act tool">ACTION: scrape_url("myblog.dev/first-internship")</div>
+      <div class="act obs">OBSERVATION: 1,240 words of markdown.</div></div>
+      <div class="f"><div class="sh">INT. AGENT LOOP — TURN 2</div>
+      <div class="char">AGENT</div><div class="par">(thinking)</div>
+      <div class="dia">Six tweets, hook first, each under 280.</div>
+      <div class="act tool">ACTION: draft_thread(key_points, n=6)</div></div>
+      <div class="f"><div class="sh">INT. AGENT LOOP — TURN 3</div>
+      <div class="act tool">ACTION: schedule_draft(thread, "next-free-slot")</div>
+      <div class="act obs">OBSERVATION: ✓ Scheduled for 9:00 AM.</div>
+      <div class="trans">CUT TO: DONE.</div></div>
+    </div>
+    <div>
+      <div class="kicker">Reading the trace</div>
+      <h2 style="font-size:64px">Every run is a <span class="it p">screenplay.</span></h2>
+      <div class="col f" style="gap:18px">
+        <div class="legend"><span class="sw" style="background:var(--ink)"></span><b>Thought</b> — the model reasons</div>
+        <div class="legend"><span class="sw" style="background:var(--rust)"></span><b>Action</b> — it picks a tool + args</div>
+        <div class="legend"><span class="sw" style="background:var(--violet)"></span><b>Observation</b> — the tool's result</div>
+      </div>
+      <p class="mt f" style="font-size:28px">This Thought → Action → Observation rhythm has a name: <b class="hl">ReAct</b> (Reason + Act).</p>
+    </div>
+  </div>
+  <aside class="notes">
+⏱ 15:30–18:00 · 2.5 min
+"If you log what an agent does, it reads like a screenplay."
+
+▸ CLICK — turn 1
+"The user asks for a thread."
+"Agent thinks: I need the post first. Action: scrape the URL."
+"Observation: 1,240 words of markdown."
+
+▸ CLICK — turn 2
+"Thinks: six tweets, hook first. Action: draft."
+
+▸ CLICK — turn 3
+"Action: schedule. Observation: scheduled for 9 AM. Cut."
+
+▸ CLICK — legend
+"Thought, action, observation."
+
+▸ CLICK
+"That rhythm is called ReAct — Reason plus Act."
+"Almost every framework runs it under the hood."
+
+✦ Source: Yao et al., "ReAct: Synergizing Reasoning and Acting in Language Models" (2022).
+  </aside>
+</section>
+
+<section class="slide" data-title="Function calling">
+  <div class="kicker">Function calling</div>
+  <h2>The model never touches <span class="it p">the props.</span></h2>
+  <div class="callsteps">
+    <div class="card f"><span class="tag">1 · You send</span><h3>messages + a tool menu</h3><p>name, description, parameters for each tool</p></div>
+    <div class="arrow f">→</div>
+    <div class="card amber fw"><span class="tag">2 · Model replies</span><pre class="json">{ "tool": "scrape_url",
+  "args": { "url": "…" } }</pre></div>
+    <div class="arrow f">→</div>
+    <div class="card fw"><span class="tag">3 · Your code runs it</span><h3>the real API call</h3><p>with your keys, your rules</p></div>
+    <div class="arrow f">→</div>
+    <div class="card lilac fw"><span class="tag">4 · Result goes back</span><h3>model continues</h3><p>…or asks for another tool</p></div>
+  </div>
+  <p class="big-line f mt2" style="font-size:54px">The LLM writes the <span class="it v">call sheet</span>. Your code <span class="it p">shoots</span> it.</p>
+  <aside class="notes">
+⏱ 18:00–20:00 · 2 min
+"Common myth: the model calls the API. It doesn't."
+
+▸ CLICK — 1
+"You send the conversation plus a menu of tools."
+
+▸ CLICK — 2
+"The model replies with JSON: please call scrape_url with this URL."
+
+▸ CLICK — 3
+"YOUR code runs the real call — your keys, your rules."
+
+▸ CLICK — 4
+"The result goes back. The model continues, or asks for another tool."
+
+▸ CLICK
+"The LLM writes the call sheet. Your code shoots it."
+"That's also why safety stays in your hands."
+  </aside>
+</section>
+
+<section class="slide" data-title="Agent or not?">
+  <div class="kicker">Audience round</div>
+  <h2>Agent… <span class="it p">or not?</span></h2>
+  <div class="grid4 aon">
+    <div class="card f"><div class="ico c"><svg><use href="#i-x"/></svg></div><h3>A spam filter</h3><p>flags emails as spam</p><div class="f pop stamp">Not an agent</div></div>
+    <div class="card f"><div class="ico c"><svg><use href="#i-ticket"/></svg></div><h3>A trip-planner bot</h3><p>searches flights, compares fares, books one under budget</p><div class="f pop stamp ok">Agent</div></div>
+    <div class="card f"><div class="ico c"><svg><use href="#i-loop"/></svg></div><h3>A coding copilot</h3><p>fixes a failing test, re-runs until green</p><div class="f pop stamp ok">Agent</div></div>
+    <div class="card f"><div class="ico c"><svg><use href="#i-coin"/></svg></div><h3>A nightly cron job</h3><p>emails a sales report at 6 AM</p><div class="f pop stamp">Not an agent</div></div>
+  </div>
+  <p class="lead f mt">Test: does an LLM <b>decide</b> the next action, <b>observe</b> the result, and <b>go again</b>?</p>
+  <aside class="notes">
+⏱ 20:00–23:00 · 3 min
+"Audience round. Shout it out — agent, or not?"
+Pattern: CLICK shows the card → ask → CLICK reveals the stamp.
+
+▸ Spam filter → Not an agent.
+"A classifier. It labels; it never acts."
+
+▸ Trip-planner bot → Agent.
+"Searches, compares, decides, books — and checks the budget."
+
+▸ Coding copilot → Agent.
+"Runs the test, reads the failure, edits, re-runs. Classic loop."
+
+▸ Nightly cron job → Not an agent.
+"Automation, yes. But no LLM decides anything."
+
+▸ CLICK — the test
+"Does an LLM decide the next action, observe the result, and go again?"
+  </aside>
+</section>
+
+<!-- ================================================================
+     REEL 02 — THE CAST
+     ================================================================ -->
+
+<section class="slide velvet" data-reel="02" data-title="Reel 02 — The Cast">
+  <div class="divider">
+    <div class="reelno"><svg class="spin"><use href="#reel-art"/></svg><div class="num">02</div></div>
+    <div><div class="kicker">Reel 02</div><h1>The Cast</h1><p class="lead it">Anatomy of a single agent</p></div>
+  </div>
+  <aside class="notes">
+⏱ 23:00–23:15 · reel runs ~12 min
+"Reel two. The cast."
+"Let's open up one agent and see what it's made of."
+  </aside>
+</section>
+
+<section class="slide" data-title="Anatomy — four things">
+  <div class="kicker">Anatomy of an agent</div>
+  <h2>Every actor needs <span class="it p">four things</span></h2>
+  <div class="anatomy">
+    <div class="card f"><div class="ico"><svg><use href="#i-brain"/></svg></div><span class="tag">Model</span><h3>The talent</h3><p>Reasons and decides the next move.</p></div>
+    <div class="card f"><div class="ico l"><svg><use href="#i-script"/></svg></div><span class="tag">Instructions</span><h3>The character brief</h3><p>Role, goal, rules, output format.</p></div>
+    <div class="hub"><svg viewBox="0 0 24 24" class="hub-i"><use href="#i-clapper"/></svg><b>AGENT</b></div>
+    <div class="card f"><div class="ico p"><svg><use href="#i-prop"/></svg></div><span class="tag">Tools</span><h3>The props</h3><p>APIs, code, search — its hands.</p></div>
+    <div class="card f"><div class="ico c"><svg><use href="#i-polaroid"/></svg></div><span class="tag">Memory</span><h3>Continuity</h3><p>What happened in earlier scenes.</p></div>
+  </div>
+  <aside class="notes">
+⏱ 23:15–25:00 · 1.75 min
+"Every actor needs four things."
+
+▸ CLICK — Model
+"The talent. It reasons and decides."
+
+▸ CLICK — Instructions
+"The character brief."
+
+▸ CLICK — Tools
+"The props — its hands on the world."
+
+▸ CLICK — Memory
+"Continuity — the person on set who remembers"
+"the coffee cup was in the left hand last scene."
+
+"Next few slides: one quick close-up on each."
+  </aside>
+</section>
+
+<section class="slide" data-title="Instructions are a character brief">
+  <div class="kicker">Instructions</div>
+  <h2>Write a <span class="it p">character brief</span>, not a wish.</h2>
+  <div class="grid2" style="grid-template-columns:.8fr 1.2fr;gap:60px;align-items:start">
+    <div class="card f" style="position:relative">
+      <span class="tag">Take 1</span>
+      <p class="mono" style="font-size:30px;color:var(--ink)">“You are a helpful assistant. Make tweets.”</p>
+      <span class="stamp" style="position:absolute;right:30px;bottom:-26px;font-size:34px">Cut!</span>
+    </div>
+    <div class="card brief f">
+      <span class="tag">Take 2 · The Writer</span>
+      <div class="bf"><b>ROLE</b><span>Thread writer for a student blogger.</span></div>
+      <div class="bf"><b>GOAL</b><span>Turn key points into a 5–7 post thread.</span></div>
+      <div class="bf"><b>RULES</b><span>Hook in post 1. Each post ≤ 280 chars.<br>Only facts from the blog.</span></div>
+      <div class="bf"><b>OUTPUT</b><span>JSON list of posts.</span></div>
+      <div class="bf"><b>NEVER</b><span>Invent stats. Use more than 2 hashtags.</span></div>
+    </div>
+  </div>
+  <p class="lead f mt2">Instructions are a <span class="hl">first-class artifact</span> — version them like code.</p>
+  <aside class="notes">
+⏱ 25:00–27:00 · 2 min
+"Instructions first."
+
+▸ CLICK — Take 1
+"'You are a helpful assistant. Make tweets.' — Cut!"
+
+▸ CLICK — Take 2
+"A real brief: role, goal, rules, output, and a never-list."
+"'Only facts from the blog' — that one line kills most hallucinations."
+
+▸ CLICK
+"Treat instructions like code: version them, review them, test them."
+  </aside>
+</section>
+
+<section class="slide" data-title="Tools need labels">
+  <div class="kicker">Tools</div>
+  <h2>Props need <span class="it p">labels.</span></h2>
+  <div class="grid2" style="grid-template-columns:1.25fr .75fr;gap:56px;align-items:center">
+<pre class="code f"><span class="k">def</span> <mark><span class="fn">scrape_url</span></mark>(
+    url: Annotated[<span class="n">str</span>, <mark>Field(description=
+        <span class="s">"Public URL of a blog post"</span>)</mark>],
+) -&gt; <span class="n">str</span>:
+    <mark><span class="s">"""Fetch a web page and return it as
+    clean markdown. Use before summarising."""</span></mark>
+    <span class="k">return</span> firecrawl.scrape(url).markdown</pre>
+    <div class="col labels">
+      <div class="f"><span class="pill a">name</span><p>what the prop <b>is</b></p></div>
+      <div class="f"><span class="pill a">docstring</span><p><b>when</b> to pick it up</p></div>
+      <div class="f"><span class="pill a">typed params</span><p><b>how</b> to hold it</p></div>
+    </div>
+  </div>
+  <p class="big-line f mt" style="font-size:48px">The model picks props by <span class="it p">reading labels</span>. Vague label → wrong prop.</p>
+  <aside class="notes">
+⏱ 27:00–29:00 · 2 min
+"Tools are just functions."
+
+▸ CLICK — code
+"But the model never sees your code. It sees the label."
+
+▸ CLICK ×3 — name · docstring · typed params
+"The name: what the prop is."
+"The docstring: when to pick it up."
+"The typed params: how to hold it."
+
+▸ CLICK
+"Vague label, wrong prop."
+"Tool descriptions ARE prompts. Write them like it matters."
+  </aside>
+</section>
+
+<section class="slide" data-title="MCP — the universal prop house">
+  <div class="kicker">Tools, standardised · Model Context Protocol</div>
+  <h2>MCP: the universal <span class="it p">prop house.</span></h2>
+  <div class="mcp">
+    <div class="card amber f" style="text-align:center"><div class="ico" style="margin:0 auto 14px"><svg><use href="#i-clapper"/></svg></div><h3>Any agent</h3><p style="color:var(--ink)">MCP client</p></div>
+    <div class="wire fw"></div>
+    <div class="bus fw"><span>M C P</span></div>
+    <div class="wire fw"></div>
+    <div class="servers">
+      <span class="pill f">GitHub</span><span class="pill f">Filesystem</span><span class="pill f">Notion</span><span class="pill f">Browser</span><span class="pill a f">Your own API</span>
+    </div>
+  </div>
+  <p class="lead mt2 f">One open protocol for tools. <span class="hl">Build a prop once — any agent can rent it.</span><br>Like USB-C, but for agent tools.</p>
+  <aside class="notes">
+⏱ 29:00–31:00 · 2 min
+"Every team writing the same tools again is wasteful. So — a standard."
+
+▸ CLICK — agent + MCP bus
+"MCP: the Model Context Protocol."
+"Your agent speaks MCP once…"
+
+▸ CLICK ×5 — servers
+"…and can use any MCP server: GitHub, filesystem, Notion, a browser — your own API."
+
+▸ CLICK
+"Build a prop once; any agent can rent it."
+"Like USB-C, but for agent tools."
+Light touch — no deep dive.
+
+✦ Source: modelcontextprotocol.io (now under the Linux Foundation's Agentic AI Foundation).
+  </aside>
+</section>
+
+<section class="slide" data-title="Memory is continuity">
+  <div class="kicker">Memory</div>
+  <h2>Memory is <span class="it p">continuity.</span></h2>
+  <div class="polaroids">
+    <div class="pol f" style="--r:-4deg"><div class="pic" style="background:var(--amber)"><svg class="i"><use href="#i-chat"/></svg></div><h3>Short-term</h3><p>This conversation — the thread so far.</p></div>
+    <div class="pol f" style="--r:3deg"><div class="pic" style="background:var(--lilac)"><svg class="i"><use href="#i-script"/></svg></div><h3>Working</h3><p>A scratchpad for this task — plans, notes, partial drafts.</p></div>
+    <div class="pol f" style="--r:-2deg"><div class="pic" style="background:#E58B62"><svg class="i"><use href="#i-polaroid"/></svg></div><h3>Long-term</h3><p>Facts that survive sessions — profile, preferences, a vector store.</p></div>
+  </div>
+  <p class="lead f mt2" style="text-align:center;margin-left:auto;margin-right:auto">Without continuity, every scene starts from zero — and the model is <b>stateless</b> by default.</p>
+  <aside class="notes">
+⏱ 31:00–32:30 · 1.5 min
+"Last part: memory. Models are stateless by default."
+
+▸ CLICK — short-term
+"The conversation so far."
+
+▸ CLICK — working
+"A scratchpad for this task: plans, notes, partial drafts."
+
+▸ CLICK — long-term
+"Facts that survive sessions: profile, preferences, a vector store."
+
+▸ CLICK
+"Without it, every scene starts from zero."
+"Today: short-term and working. Long-term is a great next step."
+  </aside>
+</section>
+
+<section class="slide lilac" data-title="Diagnose the flop">
+  <div class="kicker">Audience round</div>
+  <h2>Diagnose the flop: <span class="it p">which part broke?</span></h2>
+  <div class="col which">
+    <div class="wrow f"><p>Asks for your name again <b>three messages later</b></p><span class="pill a f">Memory</span></div>
+    <div class="wrow f"><p>Searched the web instead of <b>reading the URL you gave it</b></p><span class="pill a f">Tools · vague labels</span></div>
+    <div class="wrow f"><p>Six hashtags and a <b>made-up statistic</b></p><span class="pill a f">Instructions</span></div>
+    <div class="wrow f"><p>Nails short posts, botches a <b>3,000-word technical blog</b></p><span class="pill a f">Model</span></div>
+  </div>
+  <aside class="notes">
+⏱ 32:30–35:30 · 3 min
+"Audience round. Four flops — which part of the agent broke?"
+Pattern: CLICK shows the symptom → ask → CLICK reveals the part.
+
+▸ Asks your name again → Memory.
+"No continuity — history isn't being passed in."
+
+▸ Searched the web instead of reading your URL → Tools.
+"Two props with vague labels. It grabbed the wrong one."
+
+▸ Six hashtags, invented stat → Instructions.
+"The brief had no never-list."
+
+▸ Botches a long technical blog → Model.
+"The talent's too small for the role. Cast a bigger model."
+
+"Notice: each fix lives in a different place."
+  </aside>
+</section>
+
+<!-- ================================================================
+     REEL 03 — THE DIRECTOR
+     ================================================================ -->
+
+<section class="slide velvet" data-reel="03" data-title="Reel 03 — The Director">
+  <div class="divider">
+    <div class="reelno"><svg class="spin"><use href="#reel-art"/></svg><div class="num">03</div></div>
+    <div><div class="kicker">Reel 03</div><h1>The Director</h1><p class="lead it">When one actor isn't enough</p></div>
+  </div>
+  <aside class="notes">
+⏱ 35:30–35:45 · reel runs ~15 min
+"Reel three. The director."
+"What happens when one actor isn't enough?"
+  </aside>
+</section>
+
+<section class="slide" data-title="Why a crew?">
+  <div class="kicker">Single agent vs. crew</div>
+  <h2>One actor <span class="it">can</span> play every role. <span class="it p">Should they?</span></h2>
+  <div class="grid2" style="gap:60px">
+    <div class="card amber f">
+      <span class="tag">Why hire a crew</span>
+      <ul class="clean">
+        <li>Specialists stay in character</li>
+        <li>Shorter, sharper briefs</li>
+        <li>Parallel takes, faster shoot</li>
+        <li>Debug &amp; evaluate one role at a time</li>
+      </ul>
+    </div>
+    <div class="card f">
+      <span class="tag">What it costs</span>
+      <ul class="clean">
+        <li>More LLM calls → more latency &amp; ₹</li>
+        <li>Hand-offs drop context</li>
+        <li>Harder to trace who broke what</li>
+        <li>Agents can argue in circles</li>
+      </ul>
+    </div>
+  </div>
+  <p class="big-line f mt2" style="text-align:center">Don't hire a crew to shoot a <span class="it p">selfie.</span></p>
+  <aside class="notes">
+⏱ 35:45–37:45 · 2 min
+"One actor CAN play every role. Should they?"
+
+▸ CLICK — why
+"Specialists stay in character. Shorter, sharper briefs."
+"Parallel takes. And you can evaluate one role at a time."
+
+▸ CLICK — cost
+"But every agent adds calls, latency, and cost."
+"Hand-offs drop context. Debugging gets harder."
+
+▸ CLICK
+"Don't hire a crew to shoot a selfie."
+"Start with one agent. Split only when roles truly differ."
+  </aside>
+</section>
+
+<section class="slide" data-title="Agentic design patterns">
+  <div class="kicker">Agentic design patterns</div>
+  <h2>Four moves <span class="it p">every director knows</span></h2>
+  <div class="grid4 patterns">
+    <div class="card f"><svg viewBox="0 0 240 110" class="mini"><rect class="acc" x="18" y="30" width="70" height="50" rx="10"/><circle class="sq" cx="190" cy="55" r="28"/><path class="e" d="M92 42q48-30 70 0"/><path class="h" d="M152 34l10 8-12 4"/><path class="e dash" d="M162 70q-35 26-70 0"/><path class="h" d="M100 78l-10-8 12-3"/></svg><span class="tag">Reflection</span><h3>The retake</h3><p>Draft, critique, redo — until it's good enough.</p></div>
+    <div class="card f"><svg viewBox="0 0 240 110" class="mini"><circle class="acc" cx="50" cy="55" r="30"/><path class="e" d="M82 55h48"/><path class="h" d="M122 47l9 8-9 8"/><rect class="n" x="140" y="18" width="34" height="34" rx="6"/><rect class="n" x="186" y="18" width="34" height="34" rx="6"/><rect class="sq" x="140" y="60" width="34" height="34" rx="6"/><rect class="n" x="186" y="60" width="34" height="34" rx="6"/></svg><span class="tag">Tool use</span><h3>The props</h3><p>Reach outside the model: search, scrape, post.</p></div>
+    <div class="card f"><svg viewBox="0 0 240 110" class="mini"><rect class="acc" x="16" y="16" width="64" height="78" rx="8"/><path class="e" d="M30 36h36M30 55h36M30 74h24"/><g class="n"><circle cx="118" cy="55" r="14"/><circle cx="168" cy="55" r="14"/><circle cx="218" cy="55" r="14"/></g><path class="e" d="M84 55h20M132 55h22M182 55h22"/></svg><span class="tag">Planning</span><h3>The shot list</h3><p>Break a big goal into ordered steps first.</p></div>
+    <div class="card amber f"><svg viewBox="0 0 240 110" class="mini"><circle class="acc" cx="120" cy="28" r="20"/><g class="n"><circle cx="40" cy="84" r="17"/><circle cx="120" cy="88" r="17"/><circle cx="200" cy="84" r="17"/></g><path class="e" d="M103 40L54 72M120 48v22M137 40l49 32"/></svg><span class="tag">Multi-agent</span><h3>The crew</h3><p style="color:var(--ink)">Specialists share the work.</p></div>
+  </div>
+  <p class="lead f mt2">Patterns <span class="hl">stack</span> — one agent can plan, use tools and reflect.<br>Multi-agent is the one that needs a director.</p>
+  <aside class="notes">
+⏱ 37:45–40:45 · 3 min
+"Before crews — four design patterns every agent builder uses."
+
+▸ CLICK — Reflection
+"The retake. Draft, critique, redo."
+
+▸ CLICK — Tool use
+"The props. Reach outside the model."
+
+▸ CLICK — Planning
+"The shot list. Break the goal into steps before acting."
+
+▸ CLICK — Multi-agent
+"The crew. Split work across specialists."
+
+▸ CLICK
+"These stack. A single agent can plan, use tools AND reflect."
+"Multi-agent is the one that needs a director — so let's zoom in."
+
+✦ Source: Andrew Ng, "Agentic Design Patterns" (The Batch, 2024).
+  </aside>
+</section>
+
+<section class="slide" data-title="Five ways to direct a crew">
+  <div class="kicker">Multi-agent orchestration</div>
+  <h2>Five ways to <span class="it p">direct a crew</span></h2>
+  <div class="grid4 topos">
+    <div class="card f"><svg viewBox="0 0 240 110" class="mini"><g class="n"><circle cx="35" cy="55" r="24"/><circle cx="120" cy="55" r="24"/><circle cx="205" cy="55" r="24"/></g><path class="e" d="M62 55h28M147 55h28"/><path class="h" d="M86 49l8 6-8 6M171 49l8 6-8 6"/></svg><span class="tag">Sequential</span><h3>The assembly line</h3><p>Each agent's output feeds the next.</p></div>
+    <div class="card f"><svg viewBox="0 0 240 110" class="mini"><g class="n"><circle cx="30" cy="55" r="20"/><circle cx="120" cy="18" r="15"/><circle cx="120" cy="55" r="15"/><circle cx="120" cy="92" r="15"/><circle cx="210" cy="55" r="20"/></g><path class="e" d="M50 50L104 20M50 55h54M50 60l54 30M136 20l54 30M136 55h54M136 90l54-30"/></svg><span class="tag">Concurrent</span><h3>Multi-cam</h3><p>Same input, many agents at once; merge the takes.</p></div>
+    <div class="card f"><svg viewBox="0 0 240 110" class="mini"><g class="n"><circle cx="40" cy="55" r="24"/><circle cx="200" cy="20" r="16"/><circle cx="200" cy="90" r="16"/></g><circle cx="200" cy="55" r="16" fill="#F0A830" stroke="#261B2B" stroke-width="4"/><path class="e" d="M66 55h112"/><path class="e" d="M66 48L182 22M66 62l116 26" stroke-dasharray="6 8"/><path class="h" d="M174 49l8 6-8 6"/></svg><span class="tag">Handoff</span><h3>The stunt double</h3><p>Pass control to the specialist when needed.</p></div>
+    <div class="card f"><svg viewBox="0 0 240 110" class="mini"><circle cx="120" cy="30" r="20" fill="#F0A830" stroke="#261B2B" stroke-width="4"/><g class="n"><circle cx="45" cy="85" r="16"/><circle cx="120" cy="90" r="16"/><circle cx="195" cy="85" r="16"/></g><path class="e" d="M104 42L56 74M120 50v24M136 42l48 32M61 87h43M136 90h43"/></svg><span class="tag">Group chat</span><h3>Writers' room</h3><p>Agents share one conversation; a moderator picks who speaks.</p></div>
+    <div class="card f"><svg viewBox="0 0 240 110" class="mini"><rect class="acc" x="96" y="6" width="48" height="36" rx="8"/><g class="n"><circle cx="40" cy="86" r="17"/><circle cx="120" cy="90" r="17"/><circle cx="200" cy="86" r="17"/></g><path class="e" d="M110 44L54 70M120 44v28M130 44l56 26"/><path class="e dash" d="M57 86h45M137 90h45"/></svg><span class="tag">Supervisor</span><h3>The director</h3><p>A manager agent delegates, then stitches results.</p></div>
+  </div>
+  <p class="lead f mt2">Same agents, different wiring.<br>Pick the <span class="hl">simplest shape</span> that gets the shot.</p>
+  <aside class="notes">
+⏱ 40:45–44:00 · 3.25 min
+"Once you have a crew, how do you wire it?"
+
+▸ CLICK — Sequential
+"Assembly line. Each output feeds the next."
+
+▸ CLICK — Concurrent
+"Multi-cam. Same input, many agents at once; merge."
+
+▸ CLICK — Handoff
+"Stunt double. Control passes to the specialist."
+
+▸ CLICK — Group chat
+"Writers' room. Shared conversation; a moderator picks who speaks."
+
+▸ CLICK — Supervisor
+"The director. A manager delegates, then stitches the results."
+
+▸ CLICK
+"Same agents, different wiring."
+"Pick the simplest shape that gets the shot."
+  </aside>
+</section>
+
+<section class="slide lilac" data-title="Which pattern?">
+  <div class="kicker">Audience round</div>
+  <h2>Which pattern would <span class="it p">you</span> use?</h2>
+  <div class="col which">
+    <div class="wrow f"><p>Fix a failing test and <b>re-run until green</b></p><span class="pill a f">Tool use + reflection</span></div>
+    <div class="wrow f"><p>Plan a <b>3-day Goa trip</b> under ₹15k</p><span class="pill a f">Planning</span></div>
+    <div class="wrow f"><p>Translate a launch post into <b>5 languages</b> at once</p><span class="pill a f">Concurrent</span></div>
+    <div class="wrow f"><p>A lead splits a report across <b>3 specialists</b>, then merges</p><span class="pill a f">Supervisor</span></div>
+  </div>
+  <aside class="notes">
+⏱ 44:00–46:30 · 2.5 min
+"Your turn. Which pattern?"
+Pattern: CLICK shows the task → ask → CLICK reveals.
+
+▸ Fix a failing test → Tool use + reflection.
+"Run, read the error, retry. One agent is enough."
+
+▸ Plan a Goa trip under ₹15k → Planning.
+"Steps first, then search and book."
+
+▸ Translate into 5 languages → Concurrent.
+"Independent jobs — run them in parallel."
+
+▸ Lead splits a report → Supervisor.
+"Delegate, then merge."
+  </aside>
+</section>
+
+<section class="slide" data-title="A2A — co-productions">
+  <div class="kicker">Agent-to-Agent protocol</div>
+  <h2>A2A: when studios <span class="it p">co-produce.</span></h2>
+  <div class="a2a">
+    <div class="card amber center-card f"><h3>Your agent</h3><p style="color:var(--ink)">Studio A</p></div>
+    <div class="h-link f"><span class="pill p">A2A</span><i>agent ↔ agent, across companies</i></div>
+    <div class="card lilac center-card fw"><h3>Partner's agent</h3><p>Studio B — their stack, their model</p></div>
+    <div class="v-link f"><span class="pill">MCP</span><i>agent ↔ tools</i></div>
+    <div></div><div></div>
+    <div class="card center-card fw"><h3>Tools &amp; data</h3><p>APIs, files, DBs</p></div>
+  </div>
+  <p class="lead mt f">Each agent publishes an <b>Agent Card</b> — its résumé: skills, endpoint, auth.<br><span class="hl">MCP gives agents props; A2A gives them co-stars.</span></p>
+  <aside class="notes">
+⏱ 46:30–48:00 · 1.5 min
+"One more protocol — light touch."
+
+▸ CLICK — your agent
+
+▸ CLICK — A2A link + partner
+"A2A — agent-to-agent — lets your agent work with someone else's."
+"Another company, another framework, another model."
+
+▸ CLICK — MCP link + tools
+"Compare: MCP connects an agent to tools."
+
+▸ CLICK
+"Each agent publishes an Agent Card — its résumé."
+"MCP gives agents props. A2A gives them co-stars."
+
+✦ Source: a2a-protocol.org.
+  </aside>
+</section>
+
+<section class="slide" data-title="Today's production — Blog-to-Thread Studio">
+  <div class="kicker">Today's production</div>
+  <h2>Blog-to-Thread <span class="it p">Studio</span></h2>
+  <div class="crew c5">
+    <div class="src f"><span class="pill">blog URL</span></div>
+    <div class="ar fw">→</div>
+    <div class="role f"><div class="logo"><img src="assets/logos/firecrawl.png" alt="Firecrawl"></div><span class="tag">Reader</span><p>scrapes &amp; extracts key ideas</p></div>
+    <div class="ar f">→</div>
+    <div class="role fw"><div class="logo"><svg class="i"><use href="#i-script"/></svg></div><span class="tag">Writer</span><p>drafts a thread of 5–7&nbsp;posts</p></div>
+    <div class="ar f">→</div>
+    <div class="role fw"><div class="logo"><svg class="i"><use href="#i-eye"/></svg></div><span class="tag">Critic</span><p>scores &amp; sends notes</p></div>
+    <div class="ar f">→</div>
+    <div class="role dir fw"><div class="logo"><svg class="i"><use href="#i-clapper"/></svg></div><span class="tag">Director</span><p>plain code: ship or retake?</p></div>
+    <svg class="retake f" viewBox="0 0 516 66" aria-hidden="true"><path d="M516 4V44Q516 60 500 60H16Q0 60 0 44V8" stroke-dasharray="10 8"/><path d="M-10 20L0 6L10 20"/></svg>
+    <div class="retake-lbl fw">↺ retake with notes · after take 3 🛑 nothing ships</div>
+    <div class="ar f">→</div>
+    <div class="role fw"><div class="logo"><img src="assets/logos/typefully.png" alt="Typefully"></div><span class="tag">Publisher</span><p>saves a Typefully draft</p></div>
+    <div class="ar f">→</div>
+    <div class="src fw"><span class="pill a">9:00 AM ✓</span></div>
+  </div>
+  <p class="crew-q f">Pause — which patterns do you spot?</p>
+  <div class="crew-tags f"><span class="pill a">Tool use</span><span class="pill a">Sequential</span><span class="pill a">Reflection</span><span class="pill l">Human-in-the-loop</span></div>
+  <aside class="notes">
+⏱ 48:00–51:00 · 3 min
+"Remember 'post my blog everywhere'? That's today's production."
+
+▸ CLICK — blog URL
+"It starts with a blog URL."
+
+▸ CLICK — Reader
+"The Reader scrapes it with Firecrawl and pulls out key ideas."
+
+▸ CLICK — Writer
+"The Writer plans a 5–7 post thread."
+
+▸ CLICK — Critic
+"The Critic scores it and writes notes."
+
+▸ CLICK — Director
+"Then the Director. Not an agent — just a few lines of plain code."
+"Approved? Ship it. Not yet? Back to the Writer, with the Critic's notes."
+
+▸ CLICK — retake arrow
+"That's the retake loop. Three takes, max."
+"Still not approved after take 3? Nothing ships."
+
+▸ CLICK — Publisher
+"Only an approved thread reaches the Publisher. It saves it as a Typefully draft."
+
+▸ CLICK — 9:00 AM
+"And it's queued."
+
+▸ CLICK — question
+"Pause. Which patterns do you spot?"
+Take answers.
+
+▸ CLICK — reveal
+"Tool use. Sequential. Reflection — that's the retake loop. And a human on final cut."
+  </aside>
+</section>
+
+<!-- ================================================================
+     REEL 04 — RETAKES
+     ================================================================ -->
+
+<section class="slide velvet" data-reel="04" data-title="Reel 04 — Retakes">
+  <div class="divider">
+    <div class="reelno"><svg class="spin"><use href="#reel-art"/></svg><div class="num">04</div></div>
+    <div><div class="kicker">Reel 04</div><h1>Retakes</h1><p class="lead it">How do you know it's any good?</p></div>
+  </div>
+  <aside class="notes">
+⏱ 51:00–51:15 · reel runs ~10 min
+"Reel four. Retakes."
+"You've designed a crew. How do you know it's any good?"
+  </aside>
+</section>
+
+<section class="slide" data-title="Same script, three takes">
+  <div class="kicker">The problem</div>
+  <h2>Same script. Three takes. <span class="it p">Three films.</span></h2>
+  <div class="strip f1">
+    <div class="frame f"><div class="no">TAKE 1</div><h3>“Nobody tells you the first week is mostly waiting…”</h3><p>Strong hook, grounded.</p><span class="stamp ok" style="font-size:22px;margin-top:14px">✓ keeper</span></div>
+    <div class="frame f"><div class="no">TAKE 2</div><h3>“83% of interns feel lost in week 1…”</h3><p>That stat isn't in the blog.</p><span class="stamp" style="font-size:22px;margin-top:14px">✗ invented</span></div>
+    <div class="frame f"><div class="no">TAKE 3</div><h3>9 posts, 4 hashtags each</h3><p>Asked for 5–7, max 2 hashtags.</p><span class="stamp v" style="font-size:22px;margin-top:14px">✗ off-brief</span></div>
+  </div>
+  <p class="big-line f mt" style="font-size:54px">LLMs are non-deterministic. <span class="it p">“It worked once”</span> is not a test.</p>
+  <aside class="notes">
+⏱ 51:15–53:00 · 1.75 min
+"Same input. Three runs."
+
+▸ CLICK — Take 1
+"Strong hook, grounded. Keeper."
+
+▸ CLICK — Take 2
+"83% of interns… That stat isn't in the blog. Invented."
+
+▸ CLICK — Take 3
+"Nine posts, four hashtags each. Ignored the brief."
+
+▸ CLICK
+"LLMs are non-deterministic."
+"'It worked once' is not a test."
+  </aside>
+</section>
+
+<section class="slide" data-title="Judge the film and the making-of">
+  <div class="kicker">What to evaluate</div>
+  <h2>Judge the film <span class="it p">and the making-of.</span></h2>
+  <div class="grid2" style="gap:60px">
+    <div class="card amber f">
+      <div class="ico"><svg><use href="#i-reel"/></svg></div>
+      <span class="tag">The film · final output</span>
+      <ul class="clean"><li><b>Relevance</b> — on topic?</li><li><b>Groundedness</b> — only facts from the source?</li><li><b>Format &amp; tone</b> — follows the brief?</li><li><b>Task success</b> — actually scheduled?</li></ul>
+    </div>
+    <div class="card f">
+      <div class="ico l"><svg><use href="#i-cam"/></svg></div>
+      <span class="tag">The making-of · trajectory</span>
+      <ul class="clean"><li>Right <b>tools</b>, right <b>arguments</b>?</li><li>Right <b>order</b>, no wasted turns?</li><li>How many <b>critic loops</b>?</li><li><b>Cost &amp; latency</b> per run</li></ul>
+    </div>
+  </div>
+  <aside class="notes">
+⏱ 53:00–55:00 · 2 min
+"With agents, you grade two things."
+
+▸ CLICK — the film
+"The output: relevant, grounded, on-brief — and did the task succeed?"
+
+▸ CLICK — the making-of
+"The trajectory: right tools, right arguments, sensible order."
+"A great answer after 40 tool calls is still a problem."
+  </aside>
+</section>
+
+<section class="slide" data-title="LLM-as-a-judge">
+  <div class="kicker">LLM-as-a-judge</div>
+  <h2>Hire a <span class="it p">critic.</span></h2>
+  <div class="judge">
+    <div class="card f"><span class="tag">In</span><p style="color:var(--ink)">📄 the blog<br>🧵 the thread<br>📋 a rubric (1–5)</p></div>
+    <div class="arrow f">→</div>
+    <div class="card ink fw" style="text-align:center"><div class="ico" style="margin:0 auto 14px"><svg><use href="#i-eye"/></svg></div><h3>Judge LLM</h3><p>a separate model call<br>with its own brief</p></div>
+    <div class="arrow f">→</div>
+    <div class="card amber scorecard fw"><span class="tag">Out</span><div class="stars">★★★★<span>★</span></div><pre class="json" style="font-size:21px">{ "groundedness": 4,
+  "reason": "Post 3 repeats
+   post 1; rest is faithful." }</pre></div>
+  </div>
+  <div class="row f mt" style="gap:18px;flex-wrap:wrap;align-items:center">
+    <span class="mono r" style="font-size:22px;font-weight:700;letter-spacing:.12em">CRITICS HAVE BIASES →</span>
+    <span class="pill">likes longer answers</span><span class="pill">likes its own model family</span><span class="pill">order / position bias</span>
+  </div>
+  <div class="row f" style="gap:18px;align-items:center;margin-top:22px">
+    <span class="mono v" style="font-size:22px;font-weight:700;letter-spacing:.12em">THE FIX →</span>
+    <span class="pill l">calibrate on 20–50 human-labelled takes</span><span class="pill l">always ask for a reason</span>
+  </div>
+  <aside class="notes">
+⏱ 55:00–58:00 · 3 min
+"The scalable trick: hire a critic."
+
+▸ CLICK — inputs
+"Give it the blog, the thread, and a 1-to-5 rubric."
+
+▸ CLICK — judge
+"A separate model call with its own brief."
+
+▸ CLICK — scorecard
+"It returns a score AND a reason. The reason is how you debug."
+
+▸ CLICK — biases
+"But critics have biases:"
+"they like longer answers, their own model family, and whatever came first."
+
+▸ CLICK — the fix
+"So calibrate. Hand-label 20 to 50 takes."
+"Check the judge agrees with you before you trust it."
+
+✦ Source: Zheng et al., "Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena" (2023).
+  </aside>
+</section>
+
+<section class="slide" data-title="Test screenings">
+  <div class="kicker">The eval loop</div>
+  <h2>Test screenings <span class="it p">before release.</span></h2>
+  <div class="strip f1">
+    <div class="frame f"><div class="no">01</div><h3>Golden set</h3><p>10–50 real blog URLs + what “good” looks like</p></div>
+    <div class="frame f"><div class="no">02</div><h3>Run the crew</h3><p>on every example</p></div>
+    <div class="frame f"><div class="no">03</div><h3>Judge</h3><p>score every take</p></div>
+    <div class="frame f"><div class="no">04</div><h3>Read the worst</h3><p>failures teach most</p></div>
+    <div class="frame hot f"><div class="no">05 ↺</div><h3>Fix &amp; re-run</h3><p>prompt, tool or model — then repeat</p></div>
+  </div>
+  <p class="big-line f mt2" style="font-size:52px">Scores are for <span class="it p">comparing versions</span>, not for permission.</p>
+  <aside class="notes">
+⏱ 58:00–60:00 · 2 min
+"Put it together: test screenings before release."
+
+▸ CLICK ×5 — the loop
+1 · A golden set — even 10 real blog URLs.
+2 · Run the crew on every one.
+3 · Judge every take.
+4 · READ the worst ones — that's where the learning is.
+5 · Fix the prompt, tool, or model. Re-run.
+
+▸ CLICK
+"Scores are for comparing versions, not for permission."
+  </aside>
+</section>
+
+<section class="slide lilac" data-title="Ship it?">
+  <div class="center">
+    <div class="kicker" style="justify-content:center">Audience round</div>
+    <p class="qa">The judge gave your thread <span class="p">4.2 / 5.</span><br>Do you ship it?</p>
+    <p class="lead f mt" style="font-size:38px;text-align:center">It depends: <b>4.2 compared to what?</b><br>Track the trend, read the lowest-scoring takes,<br>and keep a <span class="hl">human on final cut</span>.</p>
+  </div>
+  <aside class="notes">
+⏱ 60:00–61:30 · 1.5 min
+"Audience round. The judge says 4.2 out of 5. Ship it?"
+Take answers.
+
+▸ CLICK
+"It depends — 4.2 compared to what?"
+"Track the trend across versions. Read the lowest takes."
+"And keep a human on final cut for anything public."
+
+"That wraps the theory. Let's meet your production kit."
+  </aside>
+</section>
+
+<!-- ================================================================
+     PREMIERE NIGHT — LAB
+     ================================================================ -->
+
+<section class="slide" data-reel="★" data-title="The production kit">
+  <div class="kicker">Premiere night · the production kit</div>
+  <h2>Today's <span class="it p">studio, cast &amp; crew</span></h2>
+  <div class="grid4 kit">
+    <div class="logo-tile f"><img src="assets/logos/maf.svg" alt="Microsoft Agent Framework"><div><span class="role">The studio</span><h3>Microsoft<br>Agent Framework</h3><p>agents, tools, workflows</p></div></div>
+    <div class="logo-tile f"><div class="logo-stack"><img src="assets/logos/maf.svg" alt="DevUI"><span>UI</span></div><div><span class="role">The monitor</span><h3>DevUI</h3><p>chat with &amp; trace your agents</p></div></div>
+    <div class="logo-tile f">    <img src="assets/logos/gemini.svg" alt="Google Gemini"><div><span class="role">The talent</span><h3>Gemini API</h3><p>free tier, no card needed</p></div></div>
+        <div class="logo-tile f"><img src="assets/logos/azure.svg" alt="Azure AI Evaluation SDK"><div><span class="role">The critics</span><h3>Azure AI<br>Evaluation SDK</h3><p>bonus: pro evaluators</p></div></div>
+    <div class="logo-tile f"><img src="assets/logos/firecrawl.png" alt="Firecrawl"><div><span class="role">Location scout</span><h3>Firecrawl</h3><p>any URL → markdown</p></div></div>
+    <div class="logo-tile f"><img src="assets/logos/typefully.png" alt="Typefully" style="border-radius:18px"><div><span class="role">The distributor</span><h3>Typefully</h3><p>drafts &amp; schedules posts</p></div></div>
+    <div class="logo-tile f"><img src="assets/logos/colab.png" alt="Google Colab"><div><span class="role">The soundstage</span><h3>Google Colab</h3><p>zero install, in-browser</p></div></div>
+    <div class="logo-tile you f"><div class="ico" style="margin:0;width:84px;height:84px"><svg><use href="#i-user"/></svg></div><div><span class="role">The director</span><h3>You</h3><p>final cut is yours</p></div></div>
+  </div>
+  <aside class="notes">
+⏱ 61:30–63:30 · 2 min
+"Premiere night. Here's your kit."
+
+▸ CLICK ×8 — one tile each
+Microsoft Agent Framework — the studio: agents, tools, workflows.
+DevUI — the monitor: chat with and trace agents.
+Gemini API — the talent: free tier, just a Google account.
+Azure AI Evaluation — the critics: pro evaluators.
+  (In the lab we score with MAF's built-in evaluators;
+   Azure's SDK is the optional director's cut.)
+Firecrawl — location scout: any URL to clean markdown.
+Typefully — the distributor: drafts and schedules posts.
+Google Colab — the soundstage: nothing to install.
+And you — the director. Final cut is yours.
+  </aside>
+</section>
+
+<section class="slide" data-title="One agent in code">
+  <div class="kicker">From kit to code · Microsoft Agent Framework</div>
+  <h2>One agent, <span class="it p">a dozen lines.</span></h2>
+<pre class="code f" style="font-size:27px">
+<span class="k">from</span> agent_framework <span class="k">import</span> Agent
+<span class="k">from</span> agent_framework.openai <span class="k">import</span> OpenAIChatCompletionClient
+
+client = OpenAIChatCompletionClient(                     <span class="c"># 🎭 the talent</span>
+    model=<span class="s">"gemini-3.5-flash-lite"</span>, api_key=GEMINI_API_KEY,
+    base_url=<span class="s">"https://generativelanguage.googleapis.com/v1beta/openai/"</span>)
+
+reader = Agent(client=client, name=<span class="s">"Reader"</span>,
+    instructions=<span class="s">"Extract the 5 key ideas from a blog post."</span>,  <span class="c"># 📜 the brief</span>
+    tools=[scrape_url])                                  <span class="c"># 🔧 the props</span>
+
+<span class="k">print</span>(<span class="k">await</span> reader.run(<span class="s">"https://myblog.dev/first-internship"</span>))   <span class="c"># 🎬 action!</span></pre>
+  <aside class="notes">
+⏱ 63:30–65:30 · 2 min
+"From kit to code. Here's one agent in Agent Framework."
+
+▸ CLICK — code
+"A client — the talent — pointed at Gemini's OpenAI-compatible endpoint."
+"An Agent with a name, a brief, and a list of props."
+"Then run. That's a real tool-using agent."
+"You'll write exactly this in scene 2."
+
+✦ Gemini speaks Chat Completions → OpenAIChatCompletionClient.
+✦ Swap base_url + model → any OpenAI-compatible provider (Ollama, Azure…).
+✦ The lab adds a small transport shim for Gemini 3 "thought signatures" — no need to explain it.
+✦ Source: github.com/microsoft/agent-framework (python/README.md).
+  </aside>
+</section>
+
+<section class="slide dark nofoot" data-title="It's lab time!">
+  <div class="center">
+    <div class="marquee twinkle" style="padding:22px">
+      <div class="inner" style="padding:18px"><img src="assets/media/minions-excited.gif" alt="Excited minions cheering" class="minions"></div>
+    </div>
+    <h1 class="mt" style="font-size:118px;color:var(--cream)">Lights. Camera. <span class="it a">Lab!</span></h1>
+  </div>
+  <aside class="notes">
+⏱ 65:30–66:00
+"And that means… it's lab time!"
+"Laptops open."
+Let the GIF loop once.
+  </aside>
+</section>
+
+<section class="slide" data-title="The shooting schedule">
+  <div class="kicker">Premiere night · the shooting schedule</div>
+  <div class="grid2" style="grid-template-columns:1.25fr .75fr;gap:60px;align-items:start">
+    <div class="script schedule f1">
+      <div class="sh">SHOOTING SCHEDULE — BLOG-TO-THREAD STUDIO</div>
+      <div class="sc f"><b>SC 1</b><span>Keys &amp; clapper — load secrets, hello-world call</span></div>
+      <div class="sc f"><b>SC 2</b><span>The Reader — your first agent + a Firecrawl tool</span></div>
+      <div class="sc f"><b>SC 3</b><span>The Writer — a brief that outputs JSON</span></div>
+      <div class="sc f"><b>SC 4</b><span>The Critic — a reflection loop, max 3 takes</span></div>
+      <div class="sc f"><b>SC 5</b><span>The Publisher — a Typefully draft tool</span></div>
+      <div class="sc hot f"><b>SC 6</b><span>Premiere — the whole crew ships to Typefully 🎉</span></div>
+      <div class="sc f"><b>SC 7</b><span>Dailies — watch it run in DevUI</span></div>
+      <div class="sc f"><b>SC 8</b><span>Retakes — score it with an LLM judge</span></div>
+    </div>
+    <div class="col f" style="align-items:center;gap:22px">
+      <a class="lablink" href="https://tinyurl.com/lights-camera-agents-lab" target="_blank" rel="noopener"><span class="stub">Lab notebook · open in Colab</span><span class="host">tinyurl.com/</span><b>lights-camera-agents-lab</b></a>
+      <p class="mono mute" style="font-size:24px;text-align:center">Then: File → Save a copy in Drive</p>
+    </div>
+  </div>
+  <aside class="notes">
+⏱ 66:00–67:00 · 1 min · lab runs ~45 min total
+"Eight scenes, one notebook."
+
+▸ CLICK ×8 — scenes
+Read the titles quickly; don't explain yet.
+
+"Open the link: tinyurl.com/lights-camera-agents-lab."
+"First: File → Save a copy in Drive, so your work persists."
+"I'll do each scene live. Fall behind? Every scene has a catch-up cell."
+  </aside>
+</section>
+
+<section class="slide" data-title="Before you roll camera">
+  <div class="kicker">Before you roll camera</div>
+  <h2>Three keys, <span class="it p">three tickets.</span></h2>
+  <div class="grid3" style="gap:40px">
+    <div class="ticket f"><div class="row" style="gap:16px;align-items:center;margin-bottom:14px"><img src="assets/logos/gemini.svg" alt="" style="height:52px"><span class="stub">Admit one · the talent</span></div><h3>Gemini API key</h3><p style="font-size:24px;margin-top:10px">Free tier, no card — save it as <b>GEMINI_API_KEY</b><br><span class="mono" style="font-size:20px">aistudio.google.com/apikey</span></p></div>
+    <div class="ticket f"><div class="row" style="gap:16px;align-items:center;margin-bottom:14px"><img src="assets/logos/firecrawl.png" alt="" style="height:52px"><span class="stub">Admit one · the scout</span></div><h3>Firecrawl key <span style="font-size:20px;opacity:.6">· optional</span></h3><p style="font-size:24px;margin-top:10px">Free credits on sign-up — skip it and a keyless reader steps in<br><span class="mono" style="font-size:20px">firecrawl.dev</span></p></div>
+    <div class="ticket f"><div class="row" style="gap:16px;align-items:center;margin-bottom:14px"><img src="assets/logos/typefully.png" alt="" style="height:52px;border-radius:12px"><span class="stub">Admit one · distributor</span></div><h3>Typefully key <span style="font-size:20px;opacity:.6">· optional</span></h3><p style="font-size:24px;margin-top:10px">Settings → API, plus one connected X / LinkedIn account. Skip it for a dry run.</p></div>
+  </div>
+  <div class="card ink f mt2" style="display:flex;gap:26px;align-items:center;padding:24px 34px">
+    <div class="ico" style="margin:0"><svg><use href="#i-key"/></svg></div>
+    <p style="font-size:28px">Paste them into <b style="color:var(--amber2)">Colab 🔑 Secrets</b> — never into a code cell you might share.</p>
+  </div>
+  <aside class="notes">
+⏱ 67:00–71:00 · ~4 min hands-on
+"Three keys. Three tickets."
+
+▸ CLICK — Gemini key
+"Google AI Studio → Create API key. Free tier, no card. That's your free LLM."
+"Save it as GEMINI_API_KEY — and flip on Notebook access in the 🔑 panel."
+
+▸ CLICK — Firecrawl
+"Free credits on sign-up. Optional — without it, the lab uses a keyless reader."
+
+▸ CLICK — Typefully
+"API key, plus one connected X or LinkedIn account."
+"Optional too — without it, the last scene is a dry run."
+
+▸ CLICK
+"All three go into Colab Secrets — the key icon on the left."
+"Never paste keys into a cell you might share."
+Walk the room.
+  </aside>
+</section>
+
+<section class="slide" data-title="DevUI — your monitor">
+  <div class="grid2" style="grid-template-columns:1.25fr .75fr;gap:56px;align-items:center;height:100%">
+    <div class="monitor f"><img src="assets/media/devui-screen.png" alt="Agent Framework DevUI screenshot"></div>
+    <div>
+      <div class="kicker">DevUI</div>
+      <h2 style="font-size:66px">Your <span class="it p">video village.</span></h2>
+      <ul class="clean">
+        <li class="f">Chat with any agent or workflow</li>
+        <li class="f">Watch every tool call &amp; message live</li>
+        <li class="f">One line: <span class="mono r" style="font-size:26px">serve(entities=[crew])</span></li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+⏱ Use during Scene 6 (~90:00)
+"On a film set, the director watches every take in video village."
+
+▸ CLICK
+"DevUI is that for agents. Chat with any agent or workflow."
+
+▸ CLICK
+"Watch every tool call and message live."
+
+▸ CLICK
+"One line to launch it."
+Switch to the live demo.
+
+✦ Source: microsoft/agent-framework python/packages/devui.
+Lab wraps ~111:00.
+  </aside>
+</section>
+
+<!-- ================================================================
+     REEL 05 — BOX OFFICE
+     ================================================================ -->
+
+<section class="slide velvet" data-reel="05" data-title="Reel 05 — Box Office">
+  <div class="divider">
+    <div class="reelno"><svg class="spin"><use href="#reel-art"/></svg><div class="num">05</div></div>
+    <div><div class="kicker">Reel 05</div><h1>Box Office</h1><p class="lead it">From premiere to wide release</p></div>
+  </div>
+  <aside class="notes">
+⏱ 111:00–111:15 · reel runs ~11 min
+"Welcome back. You've premiered."
+"Reel five: the box office — what changes when real users show up."
+  </aside>
+</section>
+
+<section class="slide lilac" data-title="10,000 users">
+  <div class="center">
+    <svg class="i" style="font-size:110px;color:var(--violet)"><use href="#i-pop"/></svg>
+    <p class="qa mt">Tomorrow, <span class="p">10,000 students</span> use your crew.</p>
+    <p class="lead mt" style="font-size:46px">What breaks <b class="r">first?</b></p>
+  </div>
+  <aside class="notes">
+⏱ 111:15–113:00 · 1.75 min
+"Tomorrow, 10,000 students use your crew. What breaks first?"
+Collect answers: rate limits, cost, slowness, bad posts, a malicious blog…
+"Hold on to those — the next slides map to them."
+  </aside>
+</section>
+
+<section class="slide" data-title="The box-office board">
+  <div class="kicker">The box-office board</div>
+  <h2>Four dials on the <span class="it p">box-office board</span></h2>
+  <div class="grid4">
+    <div class="kpi f"><div class="lbl">LATENCY</div><div class="val">5–15 s</div><p>Under 5 s feels instant.<br>Past 20 s, people bail.</p></div>
+    <div class="kpi f"><div class="lbl">COST</div><div class="val">6–8 calls</div><p>4 agents + 2 critic loops.<br>Small models, small roles.</p></div>
+    <div class="kpi f"><div class="lbl">RELIABILITY</div><div class="val">429s</div><p>Rate limits &amp; flaky APIs.<br>Retry with back-off.</p></div>
+    <div class="kpi f"><div class="lbl">SAFETY</div><div class="val">0 leaks</div><p>No unreviewed posts.<br>Treat pages as <b>data</b>.</p></div>
+  </div>
+  <aside class="notes">
+⏱ 113:00–116:00 · 3 min
+"Four dials on the box-office board."
+
+▸ CLICK — Latency
+"5–15 seconds is fine for a task. Stream progress."
+"Past ~20 seconds, people leave."
+
+▸ CLICK — Cost
+"Our crew is 6–8 LLM calls per run."
+"Use small models for small roles."
+
+▸ CLICK — Reliability
+"You'll see 429s on free tiers. Retry with back-off."
+
+▸ CLICK — Safety
+"The target is zero: no unreviewed posts, no hijacks."
+"A scraped page can say 'ignore your instructions'."
+"Tool output is data, never orders."
+  </aside>
+</section>
+
+<section class="slide" data-title="Dailies — tracing">
+  <div class="kicker">Observability</div>
+  <h2>Watch the <span class="it p">dailies</span> — every take leaves a trace.</h2>
+  <div class="trace f1">
+    <div class="r f"><span>crew.run</span><div><div class="bar root" style="width:100%"></div></div><span class="ms">14.2 s</span></div>
+    <div class="r f"><span>&nbsp;├ reader.run</span><div><div class="bar" style="margin-left:0;width:22%"></div></div><span class="ms">3.1 s</span></div>
+    <div class="r f"><span>&nbsp;│ ├ scrape_url</span><div><div class="bar tool" style="margin-left:1%;width:12%"></div></div><span class="ms">1.7 s</span></div>
+    <div class="r f"><span>&nbsp;├ writer.run</span><div><div class="bar llm" style="margin-left:22%;width:28%"></div></div><span class="ms">4.0 s</span></div>
+    <div class="r f"><span>&nbsp;├ critic.run ×2</span><div><div class="bar llm" style="margin-left:50%;width:31%"></div></div><span class="ms">4.4 s</span></div>
+    <div class="r f"><span>&nbsp;└ publisher.run</span><div><div class="bar" style="margin-left:81%;width:19%"></div></div><span class="ms">2.7 s</span></div>
+  </div>
+  <div class="row f mt" style="align-items:center;gap:24px">
+    <img src="assets/logos/opentelemetry.svg" alt="OpenTelemetry" style="height:54px">
+    <p style="font-size:28px"><b>OpenTelemetry</b> is built into Agent Framework → send traces to Aspire, App Insights, Jaeger…<br><span class="hl">If you can't see it, you can't fix it.</span></p>
+  </div>
+  <aside class="notes">
+⏱ 116:00–118:30 · 2.5 min
+"In film, you watch the dailies. For agents, that's tracing."
+
+▸ CLICK ×6 — spans
+"Every run is a tree of spans: which agent, which call, which tool, how long."
+"Here the critic loop is the biggest chunk — that's where I'd optimise."
+(Illustrative timings.)
+
+▸ CLICK
+"Agent Framework emits OpenTelemetry out of the box."
+"Send it to Aspire, App Insights, Jaeger…"
+"If you can't see it, you can't fix it."
+  </aside>
+</section>
+
+<section class="slide" data-title="Final cut stays with a human">
+  <div class="kicker">Guardrails</div>
+  <h2>Final cut stays <span class="it p">with a human.</span></h2>
+  <div class="grid2" style="grid-template-columns:1fr 1fr;gap:34px">
+    <div class="card f" style="display:flex;gap:24px"><div class="ico" style="flex:none"><svg><use href="#i-user"/></svg></div><div><h3>Drafts, not auto-post</h3><p>a person approves anything public — like our Typefully drafts</p></div></div>
+    <div class="card f" style="display:flex;gap:24px"><div class="ico l" style="flex:none"><svg><use href="#i-shield"/></svg></div><div><h3>Tool output is data</h3><p>fence scraped text; never let it rewrite instructions</p></div></div>
+    <div class="card f" style="display:flex;gap:24px"><div class="ico p" style="flex:none"><svg><use href="#i-clock"/></svg></div><div><h3>Budgets on everything</h3><p>max turns, max tokens, timeouts per tool</p></div></div>
+    <div class="card f" style="display:flex;gap:24px"><div class="ico c" style="flex:none"><svg><use href="#i-key"/></svg></div><div><h3>Least-privilege props</h3><p>allow-list tools; scoped, rotated keys</p></div></div>
+  </div>
+  <aside class="notes">
+⏱ 118:30–120:30 · 2 min
+"Four guardrails."
+
+▸ CLICK — drafts
+"Drafts, not auto-post. That's why our Producer makes Typefully drafts."
+
+▸ CLICK — tool output is data
+"Fence scraped text. Never let it rewrite instructions."
+
+▸ CLICK — budgets
+"Max turns, max tokens, timeouts on every tool."
+
+▸ CLICK — least privilege
+"Only the tools the role needs. Scoped, rotated keys."
+  </aside>
+</section>
+
+<section class="slide" data-title="The blooper reel">
+  <div class="kicker">The blooper reel</div>
+  <h2>Five ways agents <span class="it p">flop at the box office</span></h2>
+  <div class="bloopers">
+    <div class="blooper f" style="--r:-3deg"><b>The infinite take</b><p>no max-turns; two agents argue till your quota dies</p></div>
+    <div class="blooper f" style="--r:2deg"><b>Wrong prop</b><p>vague tool descriptions; the model guesses</p></div>
+    <div class="blooper f" style="--r:-2deg"><b>Too many cooks</b><p>six agents for a one-agent job</p></div>
+    <div class="blooper f" style="--r:3deg"><b>The method actor</b><p>believes instructions hidden in a web page</p></div>
+    <div class="blooper f" style="--r:-1.5deg"><b>Shipped on vibes</b><p>no golden set, no judge, no traces</p></div>
+  </div>
+  <aside class="notes">
+⏱ 120:30–122:00 · 1.5 min
+"And the blooper reel. Five ways agents flop."
+
+▸ CLICK ×5
+The infinite take — no max-turns.
+The wrong prop — vague labels.
+Too many cooks — six agents for a one-agent job.
+The method actor — believes a web page's instructions.
+Shipped on vibes — no golden set, no judge, no traces.
+
+"Every one of these maps to something we covered today."
+  </aside>
+</section>
+
+<!-- ================================================================
+     CLOSE
+     ================================================================ -->
+
+<section class="slide" data-reel="FIN" data-title="The critics' consensus">
+  <div class="kicker">The critics' consensus</div>
+  <h2>Six reviews <span class="it p">to take home</span></h2>
+  <div class="grid3 reviews">
+    <div class="review f"><div class="stars">★★★★★</div><p>“Chatbots talk. <b>Agents act.</b>”</p></div>
+    <div class="review f"><div class="stars">★★★★★</div><p>“An agent is a <b>loop</b>, not a prompt.”</p></div>
+    <div class="review f"><div class="stars">★★★★★</div><p>“Tool descriptions <b>are prompts</b>. Label your props.”</p></div>
+    <div class="review f"><div class="stars">★★★★★</div><p>“Hire a crew only when the <b>roles truly differ</b>.”</p></div>
+    <div class="review f"><div class="stars">★★★★★</div><p>“If you didn't evaluate it, <b>you're just hoping</b>.”</p></div>
+    <div class="review f"><div class="stars">★★★★★</div><p>“Ship with traces, budgets, and a <b>human on final cut</b>.”</p></div>
+  </div>
+  <aside class="notes">
+⏱ 122:00–124:00 · 2 min
+"The critics' consensus. Six reviews to take home."
+
+▸ CLICK ×6
+Chatbots talk. Agents act.
+An agent is a loop, not a prompt.
+Tool descriptions are prompts.
+Hire a crew only when roles truly differ.
+If you didn't evaluate it, you're just hoping.
+Ship with traces, budgets, and a human on final cut.
+  </aside>
+</section>
+
+<section class="slide velvet" data-title="Post-credits scene — quiz">
+  <div class="grid2" style="grid-template-columns:1.1fr .9fr;align-items:center;height:100%;gap:80px">
+    <div>
+      <div class="kicker">Don't leave yet…</div>
+      <h1 style="font-size:124px;color:var(--cream)">Post-Credits <span class="it a">Scene</span></h1>
+      <p class="lead mt">A quick quiz on everything you just watched.<br>Grab your phone and scan.</p>
+    </div>
+    <div class="col" style="align-items:center">
+      <div class="ticket" style="padding:30px;transform:rotate(-2deg)"><div class="qrbox qrimg"><img src="assets/quiz-qr.png" alt="Scan for the quiz"></div></div>
+    </div>
+  </div>
+  <aside class="notes">
+⏱ 124:00 → end
+"Don't leave yet — the post-credits scene."
+"Phones out. Scan the code. Quick quiz on everything you just watched."
+Run the quiz.
+  </aside>
+</section>
+
+<section class="slide" data-title="That's all, folks!">
+  <div data-speaker="closing"></div>
+  <aside class="notes">
+⏱ Close
+"That's all, folks. Thank you for being a fantastic crew."
+"If you build something with agents after today — tag me. I'd love to see it."
+Open for questions.
+  </aside>
+</section>
+
+</div><!-- /stage -->
+
+<div id="pv"></div>
+<div id="notesPanel"></div>
+<div id="blackout"></div>
+<div id="hud"></div>
+
+<script src="assets/speaker/speaker.js"></script>
+<script src="deck.js"></script>
+</body>
+</html>
